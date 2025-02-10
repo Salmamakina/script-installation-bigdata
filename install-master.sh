@@ -29,20 +29,11 @@ USER=ubuntu
 #   echo "Drill Binary isn't found downloading ... "
 #   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
 # fi
-
-MASTER_IP_ADDRESS=10.1.0.2
-# # Submit valid IP
-# VERIF=N
-# until [ "$VERIF" = "Y" ];
-# do
-#     echo "                                                              ";
-#     echo "The ip is $MASTER_IP_ADDRESS do you want to proceed ? (Y/[N])";
-#     echo "                                                              ";
-#     read -p "Proceed ?: " VERIF;
-# done
+WORKER_IP_ADDRESS=$1
+MASTER_IP_ADDRESS=$2
 echo " Writing Enviroment variables to .bashrc ... "
-echo 'sudo export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
-
+echo 'export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
+echo 'export WORKER_IP_ADDRESS='"$WORKER_IP_ADDRESS" >> ~/.bashrc
 # # Replacing templates Ip adresses with given Ip adresses
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.xml
