@@ -29,8 +29,9 @@ USER=ubuntu
 #   echo "Drill Binary isn't found downloading ... "
 #   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
 # fi
-WORKER_IP_ADDRESS=$1
-MASTER_IP_ADDRESS=$2
+
+MASTER_IP_ADDRESS=$1
+WORKER_IP_ADDRESS=$2
 FILE_PATH="/tmp/repo_installation/ip_addresses.txt"
 
 # Enregistrer les adresses IP dans un fichier texte
