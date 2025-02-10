@@ -34,6 +34,8 @@ MASTER_IP_ADDRESS=$2
 echo " Writing Enviroment variables to .bashrc ... "
 echo 'export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
 echo 'export WORKER_IP_ADDRESS='"$WORKER_IP_ADDRESS" >> ~/.bashrc
+
+source ~/.bashrc
 # # Replacing templates Ip adresses with given Ip adresses
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.xml
