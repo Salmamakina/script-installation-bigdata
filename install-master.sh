@@ -28,7 +28,7 @@ USER=ubuntu
 # if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
 #   echo "Drill Binary isn't found downloading ... "
 #   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
-fi
+# fi
 
 MASTER_IP_ADDRESS=$1
 # Submit valid IP
