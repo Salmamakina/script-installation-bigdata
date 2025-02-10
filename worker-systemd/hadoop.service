@@ -1,0 +1,23 @@
+[Unit]
+Description=Hadoop datanode and nodemanager
+After=network.target
+
+
+[Service]
+Type=simple
+User=hadoop-worker
+Group=hadoop-worker
+Environment="HADOOP_HOME=/opt/hadoop"
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
+ExecStart=/opt/hadoop/bin/hdfs datanode 
+ExecStartPost=/opt/hadoop/bin/yarn nodemanager 
+ExecReload=/bin/kill -HUP ${MAINPID}
+Restart=on-failure
+
+# Wait 10 seconds before restarting the service after failure.
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
+
+
+
