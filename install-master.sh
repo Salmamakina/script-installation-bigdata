@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# basic update
-echo " Basic updates "
-sudo apt-get update -y
-sudo apt-get upgrade -y
+# # basic update
+# echo " Basic updates "
+# sudo apt-get update -y
+# sudo apt-get upgrade -y
 
 # Install dir
 DIR=/opt
@@ -31,15 +31,15 @@ USER=ubuntu
 # fi
 
 MASTER_IP_ADDRESS=10.1.0.2
-# Submit valid IP
-VERIF=N
-until [ "$VERIF" = "Y" ];
-do
-    echo "                                                              ";
-    echo "The ip is $MASTER_IP_ADDRESS do you want to proceed ? (Y/[N])";
-    echo "                                                              ";
-    read -p "Proceed ?: " VERIF;
-done
+# # Submit valid IP
+# VERIF=N
+# until [ "$VERIF" = "Y" ];
+# do
+#     echo "                                                              ";
+#     echo "The ip is $MASTER_IP_ADDRESS do you want to proceed ? (Y/[N])";
+#     echo "                                                              ";
+#     read -p "Proceed ?: " VERIF;
+# done
 echo " Writing Enviroment variables to .bashrc ... "
 echo 'sudo export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
 
