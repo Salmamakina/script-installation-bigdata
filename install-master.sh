@@ -31,21 +31,14 @@ USER=ubuntu
 # fi
 WORKER_IP_ADDRESS=$1
 MASTER_IP_ADDRESS=$2
+FILE_PATH="/tmp/repo_installation/ip_addresses.txt"
 
-echo "Writing Environment variables to .bashrc ..."
+# Enregistrer les adresses IP dans un fichier texte
+echo "MASTER_IP_ADDRESS=$MASTER_IP_ADDRESS" > $FILE_PATH
+echo "WORKER_IP_ADDRESS=$WORKER_IP_ADDRESS" >> $FILE_PATH
 
-# Vérifier l'utilisateur actuel
-USER_HOME=$(eval echo ~$SUDO_USER)
-BASHRC_FILE="$USER_HOME/.bashrc"
+echo "Adresses IP enregistrées dans $FILE_PATH."
 
-# Écrire les variables dans le .bashrc de l'utilisateur normal
-echo 'export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> "$BASHRC_FILE"
-echo 'export WORKER_IP_ADDRESS='"$WORKER_IP_ADDRESS" >> "$BASHRC_FILE"
-
-# Appliquer les changements immédiatement
-source "$BASHRC_FILE"
-
-echo "Variables added successfully to $BASHRC_FILE"
 # # Replacing templates Ip adresses with given Ip adresses
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.xml
