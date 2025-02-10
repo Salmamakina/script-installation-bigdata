@@ -30,7 +30,7 @@ USER=ubuntu
 #   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
 fi
 
-MASTER_IP_ADDRESS=$1
+MASTER_IP_ADDRESS=10.1.0.3
 # Submit valid IP
 VERIF=N
 until [ "$VERIF" = "Y" ];
