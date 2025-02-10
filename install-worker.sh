@@ -30,7 +30,20 @@ if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
 fi
 
-WORKER_IP_ADDRESS=$1
+MASTER_IP_ADDRESS=$1
+WORKER_IP_ADDRESS=$2
+FILE_PATH="/tmp/repo_installation/ip_addresses.txt"
+
+# Enregistrer les adresses IP dans un fichier texte
+echo "MASTER_IP_ADDRESS=$MASTER_IP_ADDRESS" > $FILE_PATH
+echo "WORKER_IP_ADDRESS=$WORKER_IP_ADDRESS" >> $FILE_PATH
+
+echo "Adresses IP enregistrées dans $FILE_PATH."
+
+# Replacing templates Ip adresses with given Ip adresses
+sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
+sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.xml
+
 # installing openjdk
 echo " Installing openjdk "
 apt install -y openjdk-11-jdk
@@ -61,3 +74,47 @@ rm $DIR/hadoop/etc/hadoop/yarn-site.xml
 rm $DIR/hadoop/etc/hadoop/core-site.xml
 rm $DIR/hadoop/etc/hadoop/hadoop-env.sh
 
+# Copying updated ip adress
+echo " Copying new config files ... "
+cp ./config-master/yarn-site.xml $DIR/hadoop/etc/hadoop/
+cp ./config-master/hdfs-site.xml $DIR/hadoop/etc/hadoop/
+cp ./config-master/core-site.xml $DIR/hadoop/etc/hadoop/
+cp ./config-master/hadoop-env.sh $DIR/hadoop/etc/hadoop/
+
+
+# Adding enviroment variables
+echo " Writing Enviroment variables to .bashrc ... "
+echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc
+echo 'export HADOOP_HOME=/opt/hadoop' >> ~/.bashrc
+echo 'export HADOOP_INSTALL=$HADOOP_HOME' >> ~/.bashrc
+echo 'export HADOOP_MAPRED_HOME=$HADOOP_HOME' >> ~/.bashrc
+echo 'export HADOOP_COMMON_HOME=$HADOOP_HOME' >> ~/.bashrc
+echo 'export HADOOP_HDFS_HOME=$HADOOP_HOME' >> ~/.bashrc
+echo 'export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
+echo 'export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native' >> ~/.bashrc
+echo 'export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin' >> ~/.bashrc
+echo 'export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"' >> ~/.bashrc
+echo 'export SPARK_HOME=/opt/spark' >> ~/.bashrc
+echo 'export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop' >> ~/.bashrc
+
+ # Adding systemd services
+cp ./worker-systemd/hadoop.service /etc/systemd/system/
+# cp ./master-systemd/yarn.service /etc/systemd/system/
+# cp ./master-systemd/drill.service /etc/systemd/system/
+# cp ./master-systemd/zookeeper.service /etc/systemd/system/
+
+
+source ~/.bashrc
+
+# Enabling services 
+echo "Enabling service files ... "
+systemctl daemon-reload
+systemctl enable hadoop.service
+# systemctl enable yarn.service
+# systemctl enable drill.service
+# systemctl enable zookeeper.service
+
+# Starting the services
+echo "Starting services ... "
+systemctl start hadoop.service
+# systemctl start yarn.service
