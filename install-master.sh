@@ -40,6 +40,9 @@ do
     echo "                                                              ";
     read -p "Proceed ?: " VERIF;
 done
+echo " Writing Enviroment variables to .bashrc ... "
+echo 'export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
+
 # # Replacing templates Ip adresses with given Ip adresses
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.xml
