@@ -30,7 +30,7 @@ USER=ubuntu
 #   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
 # fi
 
-MASTER_IP_ADDRESS=10.1.0.3
+MASTER_IP_ADDRESS=10.1.0.2
 # Submit valid IP
 VERIF=N
 until [ "$VERIF" = "Y" ];
@@ -41,7 +41,7 @@ do
     read -p "Proceed ?: " VERIF;
 done
 echo " Writing Enviroment variables to .bashrc ... "
-echo 'export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
+echo 'sudo export MASTER_IP_ADDRESS='"$MASTER_IP_ADDRESS" >> ~/.bashrc
 
 # # Replacing templates Ip adresses with given Ip adresses
 # sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/core-site.xml
