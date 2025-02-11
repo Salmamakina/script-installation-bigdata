@@ -37,7 +37,7 @@ sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/
 echo  " Untaring hadoop to kepler folder ... "
 tar -zxf ./tar/hadoop-3.4.0.tar.gz --directory $DIR
 echo  " Untaring spark to kepler folder ... "
-tar -zxf ./tar/spark-3.4.3-bin-hadoop3.tgz --directory $DIR
+tar -zxf ./tar/spark-3.5.4-bin-hadoop3.tgz --directory $DIR
 echo " Renaming Folders ... "
 mv $DIR/hadoop* $DIR/hadoop
 mv $DIR/spark* $DIR/spark
@@ -77,7 +77,7 @@ echo 'export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop' >> ~/.bashrc
 # Adding Master profile environment variables
 if [ "$role" = "master" ]; then
     echo " Writing Enviroment variables to .bashrc "
-    echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> /etc/profile
+    echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> /etc/profile
     echo 'export HADOOP_HOME=/opt/hadoop' >> /etc/profile
     echo 'export HADOOP_INSTALL=$HADOOP_HOME' >> /etc/profile
     echo 'export HADOOP_MAPRED_HOME=$HADOOP_HOME' >> /etc/profile
@@ -124,6 +124,7 @@ if [ "$role" = "master" ]; then
      sudo systemctl start docker
      sudo systemctl enable docker
      sudo usermod -aG docker $(whoami)
+     newgrp docker
      sudo systemctl restart docker
      sudo apt-get install -y python3-pip
      sudo pip3 install docker-compose

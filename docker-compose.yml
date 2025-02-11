@@ -30,3 +30,6 @@ services:
 networks:
   mynetwork:
     driver: bridge
+volumes:
+  postgres-data:
+  mongodb-data:
