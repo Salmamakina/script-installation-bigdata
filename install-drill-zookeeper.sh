@@ -24,7 +24,7 @@ mv $DIR/apache-zookeeper* $DIR/zookeeper
 mv $DIR/apache-drill* $DIR/drill
 
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/drill-override.conf
-rm /opt/drill/conf/drill-override.conf
+sudo rm /opt/drill/conf/drill-override.conf
 sudo cp $REPO_GITHUB/config-drill/drill-override.conf /opt/drill/conf/
 sudo cp $REPO_GITHUB/config-drill/zoo.cfg /opt/zookeeper/conf/ 
 # apt install -y net-tools
