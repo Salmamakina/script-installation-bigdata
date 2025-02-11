@@ -27,7 +27,7 @@ fi
 
 # Enregistrer les adresses IP dans un fichier texte
 echo "MASTER_IP_ADDRESS=$MASTER_IP_ADDRESS" > $FILE_PATH
-echo "role=$role" > $FILE_PATH
+echo "role=$role" >> $FILE_PATH
 # Replacing templates Ip adresses with given Ip adresses
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/core-site.xml
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/yarn-site.xml
