@@ -57,39 +57,22 @@ sudo cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 
-# Adding systemd services
-cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
-cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
+# # Adding systemd services
+# cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
+# cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
 
-# Formatting the namenode
-if [ "$role" = "master" ]; then
-    hdfs namenode -format
-fi
+# # Formatting the namenode
+# if [ "$role" = "master" ]; then
+#     hdfs namenode -format
+# fi
 
-# Enabling services 
-echo "Enabling service files ... "
-systemctl daemon-reload
-systemctl enable hadoop.service
-systemctl enable yarn.service
+# # Enabling services 
+# echo "Enabling service files ... "
+# systemctl daemon-reload
+# systemctl enable hadoop.service
+# systemctl enable yarn.service
 
-# Starting the services
-echo "Starting services ... "
-systemctl start hadoop.service
-systemctl start yarn.service
-
-if [ "$role" = "master" ]; then
-     sudo apt-get install -y docker.io
-     sudo systemctl start docker
-     sudo systemctl enable docker
-     sudo usermod -aG docker $(whoami)
-     newgrp docker
-     sudo systemctl restart docker
-     sudo apt-get install -y python3-pip
-     sudo pip3 install docker-compose
-     sudo chmod +x /usr/local/bin/docker-compose
-fi
-
-if "$role" = "master"; then
-    # Run Docker-compose
-    sudo docker-compose -f $REPO_GITHUB/docker-compose.yml up -d
-fi
+# # Starting the services
+# echo "Starting services ... "
+# systemctl start hadoop.service
+# systemctl start yarn.service
