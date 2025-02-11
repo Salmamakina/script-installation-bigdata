@@ -21,7 +21,7 @@ fi
 
 if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
   echo "Spark Binary isn't found downloading ... "
-  wget -P /opt/tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz
+  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz
 
 fi
 
@@ -52,10 +52,10 @@ rm $DIR/hadoop/etc/hadoop/hadoop-env.sh
 
 # Copying updated ip adress
 echo " Copying new config files ... "
-cp $REPO_GITHUB/config-$role/yarn-site.xml $DIR/hadoop/etc/hadoop/
-cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
-cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
-cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
+sudo cp $REPO_GITHUB/config-$role/yarn-site.xml $DIR/hadoop/etc/hadoop/
+sudo cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
+sudo cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
+sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 
 
 # Adding enviroment variables
