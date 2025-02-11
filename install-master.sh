@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # basic update
 echo " Basic updates "
 sudo apt-get update -y
@@ -20,15 +20,15 @@ if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
   wget -P ./tar https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz
 fi
 
-if ! [ -f ./tar/apache-zookeeper-3.9.2-bin.tar.gz ]; then
-  echo "zookeeper Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/zookeeper/zookeeper-3.9.2/apache-zookeeper-3.9.2-bin.tar.gz
-fi
+# if ! [ -f ./tar/apache-zookeeper-3.9.2-bin.tar.gz ]; then
+#   echo "zookeeper Binary isn't found downloading ... "
+#   wget -P ./tar https://dlcdn.apache.org/zookeeper/zookeeper-3.9.2/apache-zookeeper-3.9.2-bin.tar.gz
+# fi
 
-if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
-  echo "Drill Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
-fi
+# if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
+#   echo "Drill Binary isn't found downloading ... "
+#   wget -P ./tar https://dlcdn.apache.org/drill/1.21.1/apache-drill-1.21.1.tar.gz
+# fi
 
 MASTER_IP_ADDRESS=$1
 FILE_PATH="/tmp/repo_installation/ip_addresses.txt"
@@ -46,7 +46,6 @@ sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" ./config-master/yarn-site.
 echo " Installing openjdk "
 apt install -y openjdk-11-jdk
 apt install ca-certificates-java
-apt install -y docker-compose
 echo " JDK install done "
 
 # Untaring Hadoop and spark Binaries
@@ -58,12 +57,12 @@ echo " Renaming Folders ... "
 mv $DIR/hadoop* $DIR/hadoop
 mv $DIR/spark* $DIR/spark
 
-echo  " Untaring zookeeper to kepler folder ... "
-tar -zxf ./tar/apache-zookeeper-3.9.2-bin.tar.gz --directory $DIR
-echo  " Untaring drill to kepler folder ... "
-tar -zxf ./tar/apache-drill-1.21.1.tar.gz --directory $DIR
-mv $DIR/apache-zookeeper* $DIR/zookeeper
-mv $DIR/apache-drill* $DIR/drill
+# echo  " Untaring zookeeper to kepler folder ... "
+# tar -zxf ./tar/apache-zookeeper-3.9.2-bin.tar.gz --directory $DIR
+# echo  " Untaring drill to kepler folder ... "
+# tar -zxf ./tar/apache-drill-1.21.1.tar.gz --directory $DIR
+# mv $DIR/apache-zookeeper* $DIR/zookeeper
+# mv $DIR/apache-drill* $DIR/drill
 
 # Removing default hdfs and spark on yarn config
 echo " Removing Default config files ... "
