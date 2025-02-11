@@ -30,8 +30,8 @@ fi
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/core-site.xml
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/yarn-site.xml
 
-sed -i "s|\${MAX_RAM}|$MAX_RAM|g" ./config-$role/yarn-site.xml
-sed -i "s|\${MAX_CPU}|$MAX_CPU|g" ./config-$role/yarn-site.xml
+sed -i "s|\${MAX_RAM}|$MAX_RAM|g" $REPO_GITHUB/config-$role/yarn-site.xml
+sed -i "s|\${MAX_CPU}|$MAX_CPU|g" $REPO_GITHUB/config-$role/yarn-site.xml
 
 
 # Untaring Hadoop and spark Binaries
