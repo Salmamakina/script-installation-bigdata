@@ -1,7 +1,7 @@
 #!/bin/bash
 
 role=$1
-HOME="/home/ubuntu"
+HOME=$2
 BASHRC="$HOME/.bashrc"
 PROFILE="/etc/profile"
 
