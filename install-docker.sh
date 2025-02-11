@@ -53,4 +53,4 @@ fi
 
 # Lancer docker-compose
 echo "Lancement de docker-compose..."
-sudo docker-compose -f $REPO_GITHUB/docker-compose.yml up -d
+docker-compose -f $REPO_GITHUB/docker-compose.yml up -d 
