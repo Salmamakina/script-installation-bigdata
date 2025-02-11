@@ -57,51 +57,9 @@ sudo cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 
-
-# Adding enviroment variables
-echo " Writing Enviroment variables to .bashrc ... "
-echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc
-echo 'export HADOOP_HOME=/opt/hadoop' >> ~/.bashrc
-echo 'export HADOOP_INSTALL=$HADOOP_HOME' >> ~/.bashrc
-echo 'export HADOOP_MAPRED_HOME=$HADOOP_HOME' >> ~/.bashrc
-echo 'export HADOOP_COMMON_HOME=$HADOOP_HOME' >> ~/.bashrc
-echo 'export HADOOP_HDFS_HOME=$HADOOP_HOME' >> ~/.bashrc
-echo 'export HADOOP_YARN_HOME=$HADOOP_HOME' >> ~/.bashrc
-echo 'export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native' >> ~/.bashrc
-echo 'export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin' >> ~/.bashrc
-echo 'export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"' >> ~/.bashrc
-echo 'export SPARK_HOME=/opt/spark' >> ~/.bashrc
-echo 'export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop' >> ~/.bashrc
-
-
-# Adding Master profile environment variables
-if [ "$role" = "master" ]; then
-    echo " Writing Enviroment variables to .bashrc "
-    echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> /etc/profile
-    echo 'export HADOOP_HOME=/opt/hadoop' >> /etc/profile
-    echo 'export HADOOP_INSTALL=$HADOOP_HOME' >> /etc/profile
-    echo 'export HADOOP_MAPRED_HOME=$HADOOP_HOME' >> /etc/profile
-    echo 'export HADOOP_COMMON_HOME=$HADOOP_HOME' >> /etc/profile
-    echo 'export HADOOP_HDFS_HOME=$HADOOP_HOME' >> /etc/profile
-    echo 'export HADOOP_YARN_HOME=$HADOOP_HOME' >> /etc/profile
-    echo 'export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native' >> /etc/profile
-    echo 'export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin' >> /etc/profile
-    echo 'export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"' >> /etc/profile
-    echo 'export SPARK_HOME=/opt/spark' >> /etc/profile
-    echo 'export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop' >> /etc/profile
-    echo 'export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"' >> /etc/profile
-    echo 'export SPARK_HOME=/opt/spark' >> /etc/profile
-fi
-
 # Adding systemd services
 cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
 cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
-
-# Refreshing enviroment for master
-if [ "$role" = "master" ]; then
-    source ~/.bashrc
-    source /etc/profile
-fi
 
 # Formatting the namenode
 if [ "$role" = "master" ]; then
