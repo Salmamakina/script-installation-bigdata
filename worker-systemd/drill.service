@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache Drill
+After=network.target
+
+[Service]
+Type=forking
+User=root
+WorkingDirectory=/
+ExecStart=/opt/drill/bin/drillbit.sh start
+ExecReload=/opt/drill/bin/drillbit.sh restart
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

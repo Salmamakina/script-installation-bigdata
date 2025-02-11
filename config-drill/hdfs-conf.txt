@@ -1,0 +1,19 @@
+{
+  "type": "file",
+  "connection": "hdfs://10.1.12.27:9000/",
+  "workspaces": {
+    "root": {
+      "location": "/",
+      "writable": true,
+      "defaultInputFormat": null,
+      "allowAccessOutsideWorkspace": false
+    }
+  },
+  "formats": {
+    "parquet": {
+      "type": "parquet"
+    }
+  },
+  "authMode": "SHARED_USER",
+  "enabled": true
+}

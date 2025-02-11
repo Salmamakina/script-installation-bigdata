@@ -1,0 +1,29 @@
+[Unit]
+Description=Zookeeper
+After=network.target
+
+[Service]
+# The service type is set to simple, which means it will run in the foreground.
+Type=simple
+
+# The service will run under the root user.
+User=root
+
+# The working directory for the service is set to the root directory (/).
+WorkingDirectory=/
+
+# The command to start the Hadoop Namenode.
+ExecStart=/opt/zookeeper/bin/zkServer.sh start-foreground /opt/zookeeper/conf/zoo.cfg
+
+# The command to reload the service if needed.
+ExecReload=/opt/zookeeper/bin/zkServer.sh restart /opt/zookeeper/conf/zoo.cfg
+
+# Restart the service if it fails. 
+Restart=on-failure
+
+# Wait 10 seconds before restarting the service after failure.
+RestartSec=10
+
+[Install]
+# The target multi-user.target means the service will start during system boot when multi-user mode is enabled.
+WantedBy=multi-user.target

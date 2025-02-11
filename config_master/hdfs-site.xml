@@ -18,10 +18,10 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
- <property>
+ <!-- <property>
     <name>dfs.replication</name>
     <value>${REPLICATION}</value>
-  </property>
+  </property> -->
   <property>
     <name>dfs.namenode.name.dir</name>
     <value>/home/hadoop/hdfs/namenode</value>
