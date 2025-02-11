@@ -21,7 +21,8 @@ fi
 
 if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
   echo "Spark Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz
+  wget -P /opt/tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz
+
 fi
 
 # Enregistrer les adresses IP dans un fichier texte
