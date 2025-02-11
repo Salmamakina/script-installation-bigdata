@@ -37,7 +37,7 @@
 <property>
   <name>yarn.resourcemanager.webapp.address</name>
   <value>0.0.0.0:8088</value>
-<!-- </property>
+</property>
  <property>
   <name>yarn.scheduler.maximum-allocation-mb</name>
   <value>${MAX_RAM}</value>
@@ -45,5 +45,5 @@
  <property>
   <name>yarn.scheduler.maximum-allocation-vcores</name>
   <value>${MAX_CPU}</value>
-</property> -->
+</property>
 </configuration>

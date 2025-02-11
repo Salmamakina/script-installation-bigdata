@@ -11,7 +11,8 @@ DIR=/opt
 REPO_GITHUB=/tmp/repo_installation
 MASTER_IP_ADDRESS=$1
 role=$2
-FILE_PATH="$REPO_GITHUB/ip_addresses.txt"
+MAX_CPU=$3
+MAX_RAM=$4
 
 # Downloading Binaries
 if ! [ -f ./tar/hadoop-3.4.0.tar.gz ]; then
@@ -25,12 +26,12 @@ if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
 
 fi
 
-# Enregistrer les adresses IP dans un fichier texte
-echo "MASTER_IP_ADDRESS=$MASTER_IP_ADDRESS" > $FILE_PATH
-echo "role=$role" >> $FILE_PATH
 # Replacing templates Ip adresses with given Ip adresses
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/core-site.xml
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-$role/yarn-site.xml
+
+sed -i "s|\${MAX_RAM}|$MAX_RAM|g" ./config-$role/yarn-site.xml
+sed -i "s|\${MAX_CPU}|$MAX_CPU|g" ./config-$role/yarn-site.xml
 
 
 # Untaring Hadoop and spark Binaries
@@ -57,22 +58,22 @@ sudo cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 
-# # Adding systemd services
-# cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
-# cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
+# Adding systemd services
+cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
+cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
 
-# # Formatting the namenode
-# if [ "$role" = "master" ]; then
-#     hdfs namenode -format
-# fi
+# Formatting the namenode
+if [ "$role" = "master" ]; then
+    hdfs namenode -format
+fi
 
-# # Enabling services 
-# echo "Enabling service files ... "
-# systemctl daemon-reload
-# systemctl enable hadoop.service
-# systemctl enable yarn.service
+# Enabling services 
+echo "Enabling service files ... "
+systemctl daemon-reload
+systemctl enable hadoop.service
+systemctl enable yarn.service
 
-# # Starting the services
-# echo "Starting services ... "
-# systemctl start hadoop.service
-# systemctl start yarn.service
+# Starting the services
+echo "Starting services ... "
+systemctl start hadoop.service
+systemctl start yarn.service
