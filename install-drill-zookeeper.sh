@@ -11,7 +11,7 @@ role=$3
 
 if ! [ -f ./tar/apache-zookeeper-3.9.2-bin.tar.gz ]; then
   echo "zookeeper Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/zookeeper/zookeeper-3.9.3/apache-zookeeper-3.9.3.tar.gz
+  wget -P ./tar https://dlcdn.apache.org/zookeeper/zookeeper-3.9.3/apache-zookeeper-3.9.3-bin.tar.gz
 fi
 
 if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
