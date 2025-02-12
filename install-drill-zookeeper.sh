@@ -3,7 +3,10 @@
 # Variables
 DIR=/opt
 REPO_GITHUB=/tmp/repo_installation
-role=$1
+MASTER_IP_ADDRESS=$1
+WORKER_IP_ADDRESS=$2
+role=$3
+
 
 
 if ! [ -f ./tar/apache-zookeeper-3.9.2-bin.tar.gz ]; then
@@ -23,10 +26,28 @@ tar -zxf ./tar/apache-drill-1.21.2.tar.gz --directory $DIR
 mv $DIR/apache-zookeeper* $DIR/zookeeper
 mv $DIR/apache-drill* $DIR/drill
 
+# configuring the addresses in drill 
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/drill-override.conf
+sed -i "s|\${WORKER_IP_ADDRESS}|$WORKER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/drill-override.conf
+# configuring the addresses in zookeeper
+sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/zoo.cfg
+sed -i "s|\${WORKER_IP_ADDRESS}|$WORKER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/zoo.cfg
+
 sudo rm /opt/drill/conf/drill-override.conf
 sudo cp $REPO_GITHUB/config-drill/drill-override.conf /opt/drill/conf/
 sudo cp $REPO_GITHUB/config-drill/zoo.cfg /opt/zookeeper/conf/ 
+
+# Define the file myid in the zookeeper
+if [ "$role" == "master" ]; then
+    MYID=0
+else
+    MYID=1
+fi
+
+# Créer le répertoire s'il n'existe pas
+sudo mkdir -p /var/lib/zookeeper
+echo "$MYID" | sudo tee /var/lib/zookeeper/myid
+
 apt install -y net-tools
 apt install -y netcat 
 

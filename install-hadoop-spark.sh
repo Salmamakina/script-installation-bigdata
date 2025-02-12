@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# basic update
-echo " Basic updates "
-sudo apt-get update -y
-sudo apt-get upgrade -y
-
 # Install dir
 DIR=/opt
 REPO_GITHUB=/tmp/repo_installation
