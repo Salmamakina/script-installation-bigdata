@@ -21,9 +21,6 @@ else
     echo "L'utilisateur $(whoami) est déjà dans le groupe docker."
 fi
 
-# Appliquer le changement de groupe sans redémarrer
-newgrp docker
-
 # Redémarrer Docker si nécessaire
 if sudo systemctl is-active --quiet docker; then
     sudo systemctl restart docker
