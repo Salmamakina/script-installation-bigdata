@@ -27,16 +27,16 @@ sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/
 sudo rm /opt/drill/conf/drill-override.conf
 sudo cp $REPO_GITHUB/config-drill/drill-override.conf /opt/drill/conf/
 sudo cp $REPO_GITHUB/config-drill/zoo.cfg /opt/zookeeper/conf/ 
-# apt install -y net-tools
-# apt install -y netcat 
+apt install -y net-tools
+apt install -y netcat 
 
 sudo cp $REPO_GITHUB/$role-systemd/drill.service /etc/systemd/system/
 sudo cp $REPO_GITHUB/$role-systemd/zookeeper.service /etc/systemd/system/
 
-# Enabling services 
-echo "Enabling service files ... "
-systemctl daemon-reload
-systemctl enable drill.service
-systemctl enable zookeeper.service
-systemctl start drill.service
-systemctl start zookeeper.service
+# # Enabling services 
+# echo "Enabling service files ... "
+# systemctl daemon-reload
+# systemctl enable drill.service
+# systemctl enable zookeeper.service
+# systemctl start drill.service
+# systemctl start zookeeper.service

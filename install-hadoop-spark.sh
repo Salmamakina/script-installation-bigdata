@@ -66,13 +66,13 @@ if [ "$role" = "master" ]; then
     hdfs namenode -format
 fi
 
-# Enabling services 
-echo "Enabling service files ... "
-systemctl daemon-reload
-systemctl enable hadoop.service
-systemctl enable yarn.service
+# # Enabling services 
+# echo "Enabling service files ... "
+# systemctl daemon-reload
+# systemctl enable hadoop.service
+# systemctl enable yarn.service
 
-# Starting the services
-echo "Starting services ... "
-systemctl start hadoop.service
-systemctl start yarn.service
+# # Starting the services
+# echo "Starting services ... "
+# systemctl start hadoop.service
+# systemctl start yarn.service
