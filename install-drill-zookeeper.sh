@@ -20,7 +20,7 @@ if ! [ -f ./tar/apache-drill-1.21.1.tar.gz ]; then
 fi
 
 echo  " Untaring zookeeper to kepler folder ... "
-tar -zxf ./tar/apache-zookeeper-3.9.3.tar.gz --directory $DIR
+tar -zxf ./tar/apache-zookeeper-3.9.3-bin.tar.gz --directory $DIR
 echo  " Untaring drill to kepler folder ... "
 tar -zxf ./tar/apache-drill-1.21.2.tar.gz --directory $DIR
 mv $DIR/apache-zookeeper* $DIR/zookeeper
