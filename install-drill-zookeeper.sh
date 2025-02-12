@@ -29,13 +29,22 @@ mv $DIR/apache-drill* $DIR/drill
 # configuring the addresses in drill 
 sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/drill-override.conf
 sed -i "s|\${WORKER_IP_ADDRESS}|$WORKER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/drill-override.conf
-# configuring the addresses in zookeeper
-sed -i "s|\${MASTER_IP_ADDRESS}|$MASTER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/zoo.cfg
-sed -i "s|\${WORKER_IP_ADDRESS}|$WORKER_IP_ADDRESS|g" $REPO_GITHUB/config-drill/zoo.cfg
 
 sudo rm /opt/drill/conf/drill-override.conf
 sudo cp $REPO_GITHUB/config-drill/drill-override.conf /opt/drill/conf/
-sudo cp $REPO_GITHUB/config-drill/zoo.cfg /opt/zookeeper/conf/ 
+
+
+# Générer le fichier zoo.cfg avec les valeurs réelles
+cat > /opt/zookeeper/conf/zoo.cfg <<EOL
+tickTime=2000
+dataDir=/var/lib/zookeeper
+dataLogDir=/var/lib/zookeeper
+clientPort=2181
+initLimit=5
+syncLimit=2
+server.0=$MASTER_IP_ADDRESS:2888:3888
+server.1=$WORKER_IP_ADDRESS:2888:3888
+EOL
 
 # Define the file myid in the zookeeper
 if [ "$role" == "master" ]; then
