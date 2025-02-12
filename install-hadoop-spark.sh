@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 # basic update
 echo " Basic updates "
 sudo apt-get update -y
