@@ -56,18 +56,18 @@ sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
 cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
 
-# # Formatting the namenode
-# if [ "$role" = "master" ]; then
-#     hdfs namenode -format
-# fi
+# Formatting the namenode
+if [ "$role" = "master" ]; then
+    hdfs namenode -format
+fi
 
-# # Enabling services 
-# echo "Enabling service files ... "
-# systemctl daemon-reload
-# systemctl enable hadoop.service
-# systemctl enable yarn.service
+# Enabling services 
+echo "Enabling service files ... "
+systemctl daemon-reload
+systemctl enable hadoop.service
+systemctl enable yarn.service
 
-# # Starting the services
-# echo "Starting services ... "
-# systemctl start hadoop.service
-# systemctl start yarn.service
+# Starting the services
+echo "Starting services ... "
+systemctl start hadoop.service
+systemctl start yarn.service

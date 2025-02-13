@@ -7,8 +7,6 @@ MASTER_IP_ADDRESS=$1
 WORKER_IP_ADDRESS=$2
 role=$3
 
-
-
 if ! [ -f ./tar/apache-zookeeper-3.9.2-bin.tar.gz ]; then
   echo "zookeeper Binary isn't found downloading ... "
   wget -P ./tar https://dlcdn.apache.org/zookeeper/zookeeper-3.9.3/apache-zookeeper-3.9.3-bin.tar.gz
@@ -63,10 +61,10 @@ apt install -y netcat
 sudo cp $REPO_GITHUB/$role-systemd/drill.service /etc/systemd/system/
 sudo cp $REPO_GITHUB/$role-systemd/zookeeper.service /etc/systemd/system/
 
-# # Enabling services 
-# echo "Enabling service files ... "
-# systemctl daemon-reload
-# systemctl enable drill.service
-# systemctl enable zookeeper.service
-# systemctl start drill.service
-# systemctl start zookeeper.service
+# Enabling services 
+echo "Enabling service files ... "
+systemctl daemon-reload
+systemctl enable drill.service
+systemctl enable zookeeper.service
+systemctl start drill.service
+systemctl start zookeeper.service
