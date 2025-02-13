@@ -1,5 +1,42 @@
 ---
-- name: Cloner le repo et exécuter le script
+# - name: Configuration SSH et exécution du playbook
+#   hosts: localhost
+#   gather_facts: no
+#   tasks:
+
+#     - name: Vérifier si une clé SSH existe déjà
+#       stat:
+#         path: ~/.ssh/id_rsa
+#       register: ssh_key
+
+#     - name: Générer une clé SSH si elle n'existe pas
+#       command: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
+#       when: not ssh_key.stat.exists
+
+#     - name: Lire la clé publique générée
+#       slurp:
+#         src: ~/.ssh/id_rsa.pub
+#       register: ssh_pub_key
+
+# - name: Copier la clé publique sur tous les hôtes distants
+#   hosts: all
+#   become: yes
+#   tasks:
+
+#     - name: Assurer que le dossier ~/.ssh existe
+#       file:
+#         path: ~/.ssh
+#         state: directory
+#         mode: "0700"
+
+#     - name: Ajouter la clé publique dans authorized_keys
+#       lineinfile:
+#         path: ~/.ssh/authorized_keys
+#         line: "{{ hostvars['localhost']['ssh_pub_key']['content'] | b64decode }}"
+#         create: yes
+#         mode: "0600"
+
+- name: Cloner le repo et exécuter les scripts
   hosts: all
   become: yes
   tasks:
@@ -44,31 +81,24 @@
     #     path: "/tmp/repo_installation/Adding-env-var.sh"
     #     mode: "0755"
 
-    # - name: Obtenir le nombre de cœurs CPU
-    #   shell: "lscpu | grep '^CPU(s):' | awk '{print $2}'"
-    #   register: cpu_output
-    #   changed_when: false
+    - name: Obtenir le nombre de cœurs CPU
+      shell: "lscpu | grep '^CPU(s):' | awk '{print $2}'"
+      register: cpu_output
+      changed_when: false
 
-    # - name: Extraire le nombre de cœurs CPU
-    #   set_fact:
-    #     max_cpu: "{{ cpu_output.stdout }}"
+    - name: Extraire le nombre de cœurs CPU
+      set_fact:
+        max_cpu: "{{ cpu_output.stdout }}"
 
-    # - name: Obtenir la RAM totale
-    #   shell: "free -m | grep '^Mem:' | awk '{print $2}'"
-    #   register: ram_output
-    #   changed_when: false
+    - name: Obtenir la RAM totale
+      shell: "free -m | grep '^Mem:' | awk '{print $2}'"
+      register: ram_output
+      changed_when: false
 
-    # - name: Extraire la RAM totale en MB
-    #   set_fact:
-    #     max_ram: "{{ ram_output.stdout }}"
+    - name: Extraire la RAM totale en MB
+      set_fact:
+        max_ram: "{{ ram_output.stdout }}"
 
-    # - name: Afficher le nombre de cœurs CPU
-    #   debug:
-    #     msg: "Le nombre de cœurs CPU est {{ max_cpu }}"
-
-    # - name: Afficher la RAM totale
-    #   debug:
-    #     msg: "La RAM totale est {{ max_ram }} MB"
     # - name: Tâches spécifiques au master
     #   when: inventory_hostname == "master-vm-2"
     #   block:
@@ -98,7 +128,7 @@
       shell: "bash /tmp/repo_installation/install-hadoop-spark.sh {{ hostvars['master-vm-2'].ansible_host }} {{ role }} {{ max_cpu }} {{ max_ram }}"
       become: yes
       become_user: root
-      
+
     - name: Obtenir le home de l'utilisateur courant
       shell: "getent passwd $SUDO_USER | cut -d: -f6"
       register: user_home
