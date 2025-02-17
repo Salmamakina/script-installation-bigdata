@@ -1,0 +1,18 @@
+[Unit]
+Description=Big Data API Service
+After=backend.service
+[Service]
+
+#This file should be available in /etc/systemd/system
+
+Type=simple
+User=root
+WorkingDirectory=/opt/kepler/kepler-bd-api/
+Environment="PATH=/root/.pyenv/bin:/root/.pyenv/shims:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/bin/bash ./scripts/run.sh
+ExecReload=/bin/kill -HUP ${MAINPID}
+Restart=on-failure
+RestartSec=40
+
+[Install]
+WantedBy=multi-user.target
