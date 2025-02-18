@@ -1,41 +1,4 @@
 ---
-# - name: Configuration SSH et exécution du playbook
-#   hosts: localhost
-#   gather_facts: no
-#   tasks:
-
-#     - name: Vérifier si une clé SSH existe déjà
-#       stat:
-#         path: ~/.ssh/id_rsa
-#       register: ssh_key
-
-#     - name: Générer une clé SSH si elle n'existe pas
-#       command: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
-#       when: not ssh_key.stat.exists
-
-#     - name: Lire la clé publique générée
-#       slurp:
-#         src: ~/.ssh/id_rsa.pub
-#       register: ssh_pub_key
-
-# - name: Copier la clé publique sur tous les hôtes distants
-#   hosts: all
-#   become: yes
-#   tasks:
-
-#     - name: Assurer que le dossier ~/.ssh existe
-#       file:
-#         path: ~/.ssh
-#         state: directory
-#         mode: "0700"
-
-#     - name: Ajouter la clé publique dans authorized_keys
-#       lineinfile:
-#         path: ~/.ssh/authorized_keys
-#         line: "{{ hostvars['localhost']['ssh_pub_key']['content'] | b64decode }}"
-#         create: yes
-#         mode: "0600"
-
 - name: Cloner le repo et exécuter les scripts
   hosts: all
   become: yes
@@ -47,17 +10,17 @@
         upgrade: dist
         autoremove: yes
         autoclean: yes
-    # - name: Installer Git
-    #   apt:
-    #     name: git
-    #     state: present
-    #   when: ansible_os_family == "Debian"
+    - name: Installer Git
+      apt:
+        name: git
+        state: present
+      when: ansible_os_family == "Debian"
 
-    # - name: Installer Java
-    #   apt:
-    #     name:
-    #       - openjdk-11-jdk
-    #       - ca-certificates-java
+    - name: Installer Java
+      apt:
+        name:
+          - openjdk-11-jdk
+          - ca-certificates-java
 
     - name: Cloner le repo GitHub
       git:
@@ -66,20 +29,20 @@
         version: main
         force: yes
 
-    # - name: Donner les permissions d'exécution au script hadoop-spark
-    #   file:
-    #     path: "/tmp/repo_installation/install-hadoop-spark.sh"
-    #     mode: "0755"
+    - name: Donner les permissions d'exécution au script hadoop-spark
+      file:
+        path: "/tmp/repo_installation/install-hadoop-spark.sh"
+        mode: "0755"
 
-    # - name: Donner les permissions d'exécution au script drill-zookeeper
-    #   file:
-    #     path: "/tmp/repo_installation/install-drill-zookeeper.sh"
-    #     mode: "0755"
+    - name: Donner les permissions d'exécution au script drill-zookeeper
+      file:
+        path: "/tmp/repo_installation/install-drill-zookeeper.sh"
+        mode: "0755"
 
-    # - name: Donner les permissions d'exécution au script Adding env var
-    #   file:
-    #     path: "/tmp/repo_installation/Adding-env-var.sh"
-    #     mode: "0755"
+    - name: Donner les permissions d'exécution au script Adding env var
+      file:
+        path: "/tmp/repo_installation/Adding-env-var.sh"
+        mode: "0755"
 
     - name: Obtenir le nombre de cœurs CPU
       shell: "lscpu | grep '^CPU(s):' | awk '{print $2}'"
@@ -99,47 +62,42 @@
       set_fact:
         max_ram: "{{ ram_output.stdout }}"
 
-    # - name: Tâches spécifiques au master
-    #   when: inventory_hostname == "master-vm-2"
-    #   block:
-    #     - name: Afficher un message pour le master
-    #       debug:
-    #         msg: "Exécution des tâches pour le Master"
+    - name: Tâches spécifiques au master
+      when: inventory_hostname == "master-vm-test"
+      block:
+        - name: Afficher un message pour le master
+          debug:
+            msg: "Exécution des tâches pour le Master"
 
-    #     - name: Donner les permissions d'exécution au script install-docker
-    #       file:
-    #         path: "/tmp/repo_installation/install-docker.sh"
-    #         mode: "0755"
-    #     - name: Ajouter l'utilisateur au groupe Docker
-    #       user:
-    #         name: "{{ ansible_user }}"
-    #         groups: docker
-    #         append: yes
-              # - name: Installation Docker et Docker-compose
-              #shell: "bash /tmp/repo_installation/install-docker.sh"
-              #become: yes
-              #become_user: root
+        - name: Donner les permissions d'exécution au script install-docker
+          file:
+            path: "/tmp/repo_installation/install-docker.sh"
+            mode: "0755"
+        - name: Ajouter l'utilisateur au groupe Docker
+          user:
+            name: "{{ ansible_user }}"
+            groups: docker
+            append: yes
+        - name: Installation Docker et Docker-compose
+          shell: "bash /tmp/repo_installation/install-docker.sh"
+          become: yes
+          become_user: root
 
     - name: Extraire le rôle du host (master ou worker)
       set_fact:
         role: "{{ inventory_hostname.split('-')[0] }}"
 
     - name: Installer Hadoop et Spark
-      shell: "bash /tmp/repo_installation/install-hadoop-spark.sh {{ hostvars['master-vm-2'].ansible_host }} {{ role }} {{ max_cpu }} {{ max_ram }}"
+      shell: "bash /tmp/repo_installation/install-hadoop-spark.sh {{ hostvars['master-vm-test'].ansible_host }} {{ role }} {{ max_cpu }} {{ max_ram }}"
       become: yes
       become_user: root
 
-    - name: Obtenir le home de l'utilisateur courant
-      shell: "getent passwd $SUDO_USER | cut -d: -f6"
-      register: user_home
-      when: ansible_env.SUDO_USER is defined
-
-        #- name: Ajouter les variables d'environnement
-        #shell: "bash /tmp/repo_installation/Adding-env-var.sh {{ role }} {{ user_home.stdout }}"
-        #become: yes
+    - name: Ajouter les variables d'environnement
+      shell: "bash /tmp/repo_installation/Adding-env-var.sh {{ role }} /root"
+      become: yes
 
     - name: Installer Drill et Zookeeper
-      shell: "bash /tmp/repo_installation/install-drill-zookeeper.sh {{ hostvars['master-vm-2'].ansible_host }} {{ hostvars['worker-vm-2'].ansible_host }} {{ role }}"
+      shell: "bash /tmp/repo_installation/install-drill-zookeeper.sh {{ hostvars['master-vm-test'].ansible_host }} {{ hostvars['worker-vm-test'].ansible_host }} {{ role }}"
       become: yes
       become_user: root
 
