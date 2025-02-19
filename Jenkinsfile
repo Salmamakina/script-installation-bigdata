@@ -22,35 +22,35 @@ pipeline {
             }
         }
 
-        stage('Initialize Terraform') {
-            steps {
-                script {
-                    dir('terraform_scripts') {
-                        sh '${TERRAFORM_HOME} init'
-                    }
-                }
-            }
-        }
+        // stage('Initialize Terraform') {
+        //     steps {
+        //         script {
+        //             dir('terraform_scripts') {
+        //                 sh '${TERRAFORM_HOME} init'
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Terraform Plan') {
-            steps {
-                script {
-                    dir('terraform_scripts') {
-                        sh '${TERRAFORM_HOME} plan'
-                    }
-                }
-            }
-        }
+        // stage('Terraform Plan') {
+        //     steps {
+        //         script {
+        //             dir('terraform_scripts') {
+        //                 sh '${TERRAFORM_HOME} plan'
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    dir('terraform_scripts') {
-                        sh '${TERRAFORM_HOME} apply -auto-approve'
-                    }
-                }
-            }
-        }
+        // stage('Terraform Apply') {
+        //     steps {
+        //         script {
+        //             dir('terraform_scripts') {
+        //                 sh '${TERRAFORM_HOME} apply -auto-approve'
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('SonarQube Analysis') {
             steps {
