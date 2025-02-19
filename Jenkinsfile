@@ -18,7 +18,7 @@ pipeline {
 
         stage('Cloning from GitHub') {
             steps {
-                git branch: 'main', url: 'https://github.com/Salmamakina/terraform_scripts.git'
+                git branch: 'main', credentialsId: 'Github-Token', url: 'https://github.com/Salmamakina/terraform_scripts.git'
             }
         }
 
