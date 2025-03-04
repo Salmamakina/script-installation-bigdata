@@ -52,6 +52,11 @@ sudo cp $REPO_GITHUB/config-$role/hdfs-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/core-site.xml $DIR/hadoop/etc/hadoop/
 sudo cp $REPO_GITHUB/config-$role/hadoop-env.sh $DIR/hadoop/etc/hadoop/
 
+sudo mkdir -p /home/hadoop/hdfs/namenode
+sudo mkdir -p /home/hadoop/hdfs/datanode
+sudo chown -R root:root /home/hadoop/hdfs
+sudo chmod -R 755 /home/hadoop/hdfs
+
 # Adding systemd services
 cp $REPO_GITHUB/$role-systemd/hadoop.service /etc/systemd/system/
 cp $REPO_GITHUB/$role-systemd/yarn.service /etc/systemd/system/
