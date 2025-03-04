@@ -1,6 +1,30 @@
 <?xml version="1.0"?>
 <configuration>
   <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>${MASTER_IP_ADDRESS}</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.address</name>
+    <value>${MASTER_IP_ADDRESS}:8032</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.scheduler.address</name>
+    <value>${MASTER_IP_ADDRESS}:8030</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.resource-tracker.address</name>
+    <value>${MASTER_IP_ADDRESS}:8031</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.admin.address</name>
+    <value>${MASTER_IP_ADDRESS}:8033</value>
+  </property>
+  <property>
+    <name>yarn.resourcemanager.webapp.address</name>
+    <value>0.0.0.0:8088</value>
+  </property>
+  <property>
     <name>yarn.nodemanager.resource.memory-mb</name>
     <value>${MAX_RAM}</value>
   </property>

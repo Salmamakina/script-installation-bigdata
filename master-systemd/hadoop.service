@@ -10,7 +10,7 @@ Type=simple
 User=root
 
 # The working directory for the service is set to the root directory (/).
-WorkingDirectory=/
+WorkingDirectory=/home/hadoop
 
 # The command to start the Hadoop Namenode.
 ExecStart=/opt/hadoop/bin/hdfs namenode
