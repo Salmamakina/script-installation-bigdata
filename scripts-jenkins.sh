@@ -79,8 +79,9 @@ services:
       SONAR_JDBC_URL: jdbc:postgresql://postgres/sonarqube
       SONAR_JDBC_USERNAME: sonar
       SONAR_JDBC_PASSWORD: sonar
+      SONAR_WEB_PORT: 9001
     ports:
-      - "9000:9000"
+      - "9099:9001"
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
