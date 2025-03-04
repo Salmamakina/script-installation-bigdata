@@ -140,6 +140,6 @@ fi
 # ===================== Affichage des informations finales =====================
 
 # Afficher les accès
-echo "✅ Jenkins est accessible sur : http://$(hostname -I | awk '{print $1}'):8090"
-echo "✅ SonarQube est accessible sur : http://$(hostname -I | awk '{print $1}'):9000"
+echo "✅ Jenkins est accessible sur : http://$(hostname -I | awk '{print $1}'):8080"
+echo "✅ SonarQube est accessible sur : http://$(hostname -I | awk '{print $1}'):9001"
 echo "🔑 SonarQube - Utilisateur: admin / Mot de passe: admin (première connexion)"
