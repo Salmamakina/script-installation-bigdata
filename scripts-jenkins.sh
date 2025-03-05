@@ -53,6 +53,13 @@ fi
 
 # ===================== Déploiement de SonarQube =====================
 
+# Vérifier si le conteneur SonarQube existe déjà et le supprimer
+echo "Vérification de l'existence d'un conteneur SonarQube..."
+if sudo docker ps -a --format '{{.Names}}' | grep -q '^sonar$'; then
+  echo "Un conteneur SonarQube existe déjà. Suppression..."
+  sudo docker stop sonar && sudo docker rm sonar
+fi 
+
 # Créer un répertoire pour Docker Compose
 echo "Création du répertoire pour Docker Compose..."
 sudo mkdir -p /opt/sonarqube
@@ -79,9 +86,9 @@ services:
       SONAR_JDBC_URL: jdbc:postgresql://postgres/sonarqube
       SONAR_JDBC_USERNAME: sonar
       SONAR_JDBC_PASSWORD: sonar
-      SONAR_WEB_PORT: 9001
+      SONAR_WEB_PORT: 9000
     ports:
-      - "9099:9001"
+      - "9002:9000"
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_extensions:/opt/sonarqube/extensions
@@ -116,6 +123,11 @@ else
   echo "Erreur lors de la création du fichier docker-compose.yml."
   exit 1
 fi
+# Vérifier et modifier la limite vm.max_map_count
+echo "Augmentation de la limite vm.max_map_count..."
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
+sudo sysctl --system
 
 # Démarrer SonarQube avec Docker Compose
 echo "Démarrage de SonarQube avec Docker Compose..."
@@ -126,20 +138,3 @@ else
   echo "Erreur lors du démarrage de SonarQube."
   exit 1
 fi
-
-# Vérifier les conteneurs Docker en cours d'exécution
-echo "Vérification des conteneurs Docker..."
-sudo docker ps
-if [ $? -eq 0 ]; then
-  echo "Conteneurs Docker en cours d'exécution affichés ci-dessus."
-else
-  echo "Erreur lors de l'affichage des conteneurs Docker."
-  exit 1
-fi
-
-# ===================== Affichage des informations finales =====================
-
-# Afficher les accès
-echo "✅ Jenkins est accessible sur : http://$(hostname -I | awk '{print $1}'):8080"
-echo "✅ SonarQube est accessible sur : http://$(hostname -I | awk '{print $1}'):9001"
-echo "🔑 SonarQube - Utilisateur: admin / Mot de passe: admin (première connexion)"
