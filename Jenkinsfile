@@ -4,81 +4,86 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonarqube-scanner'
         TERRAFORM_HOME = '/usr/bin/terraform'
-        FRONTEND_TOKEN = credentials('Kepler-Front')
-        SERVER_NAME = "34.72.246.215"
+        SERVER_NAME = "34.59.68.175"
     }
 
     tools {
         jdk 'jdk17'
     }
 
-    stages {
-        // stage('Clean Workspace') {
-        //     steps {
-        //         cleanWs()
-        //     }
-        // }
-
-        stage('Checkout') {
+    // stages {
+    //     stage('Clean Workspace') {
+    //         steps {
+    //             cleanWs()
+    //         }
+    //     }
+        stage('Cloning the kepler frontend repository') {
             steps {
-                script {
-                    sh "git clone https://${FRONTEND_TOKEN}@github.com/Tanit-Lab/kepler-frontend.git"
+                sshagent(['kepler-ssh']) {  // Remplace par l'ID de la credential SSH
+                    sh 'git clone git@github.com:Tanit-Lab/kepler-frontend.git /var/lib/jenkins/workspace/Kepler_Project/kepler-frontend/'
                 }
             }
         }
         
-        //for the frontend
-        // stage('Set Permissions for kepler-frontend') {
-        //     steps {
-        //         script {
-        //             sh "sudo chown -R jenkins:jenkins ${WORKSPACE}/kepler-frontend"
-        //             sh "sudo chmod -R 755 ${WORKSPACE}/kepler-frontend"
-        //             sh "ls -l ${WORKSPACE}/kepler-frontend"
-        //         }
-        //     }
-        // }
-        // stage('Modifying NGINX config for kepler-frontend') {
-        //     steps {
-        //         script {
-        //             def nginxConfFile = "${WORKSPACE}/kepler-frontend/nginx.conf"
-        //             sh "sed -i 's/server_name .*/server_name ${SERVER_NAME};/' ${nginxConfFile}"
-        //             sh "cat ${nginxConfFile}"
-        //         }
-        //     }
-        // }
-        // stage('Modifier environment.prod.ts') {
-        //     steps {
-        //         script {
-        //             def envFile = "${WORKSPACE}/kepler-frontend/src/environments/environment.prod.ts"
-        //             sh """
-        //                 sed -i 's|34.121.4.38|${SERVER_NAME}|g' ${envFile}
-        //                 sed -i 's|35.222.175.109|${SERVER_NAME}|g' ${envFile}
-        //             """
-        //             sh "cat ${envFile}"
-        //         }
-        //     }
-        // }
-        // stage('Building Docker Image (kepler-frontend)') {
-        //     steps {
-        //         script {
-        //             sh """
-        //                 sudo docker build -t kepler-frontend:latest ${WORKSPACE}/kepler-frontend
-        //             """
-        //         }
-        //     }
-        // }
-        // stage('Deploying Container (kepler-frontend)') {
-        //     steps {
-        //         script {
-        //             sh """
-        //                 sudo docker stop kepler-frontend || true
-        //                 sudo docker rm kepler-frontend || true
-        //                 sudo docker-compose -f ${WORKSPACE}/kepler-frontend/docker-compose-front.yml up -d --build
-        //             """
-        //         }
-        //     }
-        // }
+        // //for the frontend
+        stage('Set Permissions for kepler-frontend') {
+            steps {
+                script {
+                    sh "sudo chown -R jenkins:jenkins ${WORKSPACE}/kepler-frontend"
+                    sh "sudo chmod -R 755 ${WORKSPACE}/kepler-frontend"
+                    sh "ls -l ${WORKSPACE}/kepler-frontend"
+                }
+            }
+        }
+        stage('Modifying NGINX config for kepler-frontend') {
+            steps {
+                script {
+                    def nginxConfFile = "${WORKSPACE}/kepler-frontend/nginx.conf"
+                    sh "sed -i 's/server_name .*/server_name ${SERVER_NAME};/' ${nginxConfFile}"
+                    sh "cat ${nginxConfFile}"
+                }
+            }
+        }
+        stage('Modifier environment.prod.ts') {
+            steps {
+                script {
+                    def envFile = "${WORKSPACE}/kepler-frontend/src/environments/environment.prod.ts"
+                    sh """
+                        sed -i 's|34.121.4.38|${SERVER_NAME}|g' ${envFile}
+                        sed -i 's|35.222.175.109|${SERVER_NAME}|g' ${envFile}
+                    """
+                    sh "cat ${envFile}"
+                }
+            }
+        }
+        stage('Building Docker Image (kepler-frontend)') {
+            steps {
+                script {
+                    sh """
+                        sudo docker build -t kepler-frontend:latest ${WORKSPACE}/kepler-frontend
+                    """
+                }
+            }
+        }
+        stage('Deploying Container (kepler-frontend)') {
+            steps {
+                script {
+                    sh """
+                        sudo docker stop kepler-frontend || true
+                        sudo docker rm kepler-frontend || true
+                        sudo docker-compose -f ${WORKSPACE}/kepler-frontend/docker-compose-front.yml up -d --build
+                    """
+                }
+            }
+        }
         // //for the backend
+        // stage('Cloning the kepler backend repository') {
+        //     steps {
+        //         sshagent(['kepler-ssh']) {  // Remplace par l'ID de la credential SSH
+        //             sh 'git clone git@github.com:Tanit-Lab/kepler-backend.git /var/lib/jenkins/workspace/Kepler_Project/kepler-backend/'
+        //         }
+        //     }
+        // }
         // stage('Set Permissions for kepler-backend') {
         //     steps {
         //         script {
@@ -124,7 +129,14 @@ pipeline {
         //         }
         //     }
         // }
-        // BIG DATA API
+        /////BIG DATA API
+        // stage('Cloning the kepler big data api repository') {
+        //     steps {
+        //         sshagent(['kepler-ssh']) {  // Remplace par l'ID de la credential SSH
+        //             sh 'git clone git@github.com:Tanit-Lab/kepler-bd-api.git /var/lib/jenkins/workspace/Kepler_Project/kepler-bd-api/'
+        //         }
+        //     }
+        // }
         // stage('Set Permissions for kepler-bd-api ') {
         //     steps {
         //         script {
@@ -199,31 +211,25 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Install Prometheus & Grafana') {
-            steps {
-                sh '''
-                    docker-compose -f docker-compose.yml up -d
-                '''
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh '''
-                        set -e
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=Kepler_Project \
-                        -Dsonar.projectKey=Kepler_Project
-                    '''
-                }
-            }
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
-                }
-            }
-        }
+        
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube-Server') {
+        //             sh '''
+        //                 set -e
+        //                 $SCANNER_HOME/bin/sonar-scanner \
+        //                 -Dsonar.projectName=Kepler_Project \
+        //                 -Dsonar.projectKey=Kepler_Project
+        //             '''
+        //         }
+        //     }
+        // }
+        // stage('Quality Gate') {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
+        //         }
+        //     }
+        // }
     }
 }

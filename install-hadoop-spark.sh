@@ -16,7 +16,7 @@ fi
 
 if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
   echo "Spark Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.4-bin-hadoop3.tgz
+  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.5-bin-hadoop3.tgz
 
 fi
 
@@ -32,7 +32,7 @@ sed -i "s|\${MAX_CPU}|$MAX_CPU|g" $REPO_GITHUB/config-$role/yarn-site.xml
 echo  " Untaring hadoop to kepler folder ... "
 tar -zxf ./tar/hadoop-3.4.0.tar.gz --directory $DIR
 echo  " Untaring spark to kepler folder ... "
-tar -zxf ./tar/spark-3.5.4-bin-hadoop3.tgz --directory $DIR
+tar -zxf ./tar/spark-3.5.5-bin-hadoop3.tgz --directory $DIR
 echo " Renaming Folders ... "
 mv $DIR/hadoop* $DIR/hadoop
 mv $DIR/spark* $DIR/spark
