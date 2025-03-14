@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk17'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+                 }
+        }
+        stage('Clone OpenWebUI Repo') {
+            steps {
+                script {
+                    // Cloner le repo OpenWebUI
+                    git url: 'https://github.com/open-webui/open-webui.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Deploy OpenWebUI with Docker Compose') {
+            steps {
+                script {
+                    // Naviguer dans le répertoire du repo OpenWebUI
+                    dir('open-webui') {
+                        // Exécuter Docker Compose pour déployer OpenWebUI
+                        sh '''
+                        sudo docker-compose down || true   # Arrêter les containers précédents
+                        sudo docker-compose up -d          # Démarrer les containers OpenWebUI
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
