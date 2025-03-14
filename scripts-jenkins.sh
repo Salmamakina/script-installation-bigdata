@@ -34,7 +34,9 @@ fi
 
 # Démarrer et activer Jenkins
 echo "Démarrage de Jenkins..."
-sudo systemctl enable --now jenkins
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+
 if [ $? -eq 0 ]; then
   echo "Jenkins démarré et activé avec succès."
 else
