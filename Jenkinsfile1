@@ -1,20 +1,42 @@
 pipeline {
     agent any
+    
+    environment {
+        SCANNER_HOME = tool 'sonarqube-scanner'
+    }
 
     tools {
         jdk 'jdk17'
     }
+
     stages {
         stage('Clean Workspace') {
             steps {
-                cleanWs()
-                 }
+                cleanWs() 
+            }
         }
+
         stage('Clone OpenWebUI Repo') {
             steps {
                 script {
-                    // Cloner le repo OpenWebUI
-                    git url: 'https://github.com/open-webui/open-webui.git', branch: 'main'
+                    // Cloner le dépôt OpenWebUI spécifiquement dans le répertoire open-webui
+                    dir('open-webui') {  // Changer de répertoire pour le clonage
+                        git url: 'https://github.com/open-webui/open-webui.git', branch: 'main'
+                    }
+                }
+            }
+        }
+        stage('Modify Dockerfile') {
+            steps {
+                script {
+                    // Naviguer dans le répertoire du repo OpenWebUI
+                    dir('open-webui') {
+                        // Ajouter l'argument au début du Dockerfile
+                        sh '''
+                        sed -i '1i ARG BUILDPLATFORM=linux/amd64' Dockerfile
+                        sed -i 's/RUN npm run build/RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build/' Dockerfile
+                        '''
+                    }
                 }
             }
         }
@@ -27,9 +49,62 @@ pipeline {
                         // Exécuter Docker Compose pour déployer OpenWebUI
                         sh '''
                         sudo docker-compose down || true   # Arrêter les containers précédents
-                        sudo docker-compose up -d          # Démarrer les containers OpenWebUI
+                        sudo docker-compose up --build -d          # Démarrer les containers OpenWebUI
                         '''
                     }
+                }
+            }
+        }
+        stage('Install Trivy if not present') {
+            steps {
+                script {
+                    // Vérifier si Trivy est installé
+                    def trivyInstalled = sh(script: 'which trivy', returnStatus: true)
+                    
+                    if (trivyInstalled != 0) {
+                        // Si Trivy n'est pas installé, on l'installe
+                        echo 'Trivy non trouvé, installation en cours...'
+                        sh '''
+                        curl -sfL https://github.com/aquasecurity/trivy/releases/download/v0.34.0/trivy_0.34.0_Linux-64bit.tar.gz -o trivy.tar.gz
+                        tar xzvf trivy.tar.gz
+                        sudo mv trivy /usr/local/bin/
+                        '''
+                    } else {
+                        echo 'Trivy est déjà installé.'
+                    }
+                }
+            }
+        }
+
+        // Stage pour scanner l'image Docker avec Trivy
+        stage('Scan Docker Image with Trivy') {
+            steps {
+                script {
+                    // Spécifier le nom de l'image Docker à scanner
+                    def dockerImage = 'ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}'
+
+                    // Scanner l'image Docker avec Trivy
+                    echo "Scanning Docker image ${dockerImage} with Trivy..."
+                    sh "trivy image --severity HIGH,CRITICAL ${dockerImage}"
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh '''
+                        set -e
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectName=chatbot_cicd \
+                        -Dsonar.projectKey=chatbot_cicd
+                    '''
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'SonarQube-Token'
                 }
             }
         }
