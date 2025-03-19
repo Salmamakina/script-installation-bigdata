@@ -15,12 +15,10 @@ pipeline {
                 cleanWs() 
             }
         }
-
         stage('Clone OpenWebUI Repo') {
             steps {
                 script {
-                    // Cloner le dépôt OpenWebUI spécifiquement dans le répertoire open-webui
-                    dir('open-webui') {  // Changer de répertoire pour le clonage
+                    dir('open-webui') { 
                         git url: 'https://github.com/open-webui/open-webui.git', branch: 'main'
                     }
                 }
@@ -29,9 +27,7 @@ pipeline {
         stage('Modify Dockerfile') {
             steps {
                 script {
-                    // Naviguer dans le répertoire du repo OpenWebUI
                     dir('open-webui') {
-                        // Ajouter l'argument au début du Dockerfile
                         sh '''
                         sed -i '1i ARG BUILDPLATFORM=linux/amd64' Dockerfile
                         sed -i 's/RUN npm run build/RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build/' Dockerfile
@@ -40,13 +36,10 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy OpenWebUI with Docker Compose') {
             steps {
                 script {
-                    // Naviguer dans le répertoire du repo OpenWebUI
                     dir('open-webui') {
-                        // Exécuter Docker Compose pour déployer OpenWebUI
                         sh '''
                         sudo docker-compose down || true   # Arrêter les containers précédents
                         sudo docker-compose up --build -d          # Démarrer les containers OpenWebUI
@@ -75,15 +68,10 @@ pipeline {
                 }
             }
         }
-
-        // Stage pour scanner l'image Docker avec Trivy
         stage('Scan Docker Image with Trivy') {
             steps {
                 script {
-                    // Spécifier le nom de l'image Docker à scanner
                     def dockerImage = 'ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}'
-
-                    // Scanner l'image Docker avec Trivy
                     echo "Scanning Docker image ${dockerImage} with Trivy..."
                     sh "trivy image --severity HIGH,CRITICAL ${dockerImage}"
                 }
