@@ -14,13 +14,12 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 cleanWs()
-                // checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'kepler-ssh', url: 'git@github.com:Tanit-Lab/kepler-frontend.git']])
             }
         }
         stage('Cloning the kepler frontend repository') {
             steps {
-                sshagent(['kepler-ssh']) {  // Remplace par l'ID de la credential SSH
-                    sh 'git clone git@github.com:Tanit-Lab/kepler-frontend.git /var/lib/jenkins/workspace/Kepler-frontend/kepler-frontend/'
+                sshagent(['kepler-ssh']) {  
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kepler-frontend']], userRemoteConfigs: [[credentialsId: 'kepler-ssh', url: 'git@github.com:Tanit-Lab/kepler-frontend.git']])
                 }
             }
         }
@@ -56,6 +55,30 @@ pipeline {
                 }
             }
         }
+
+        // configuration de smarketyrs
+        stage('Modifying NGINX config for smarketyrs') {
+            steps {
+                script {
+                    def nginxConfFile = "${WORKSPACE}/kepler-frontend/nginx-smarket.conf"
+                    sh "sed -i 's/server_name .*/server_name ${SERVER_NAME};/' ${nginxConfFile}"
+                    sh "cat ${nginxConfFile}"
+                }
+            }
+        }
+        stage('Modifier environment.smarket.ts') {
+            steps {
+                script {
+                    def envFile = "${WORKSPACE}/kepler-frontend/src/environments/environment.smarket.ts"
+                    sh """
+                        sed -i 's|34.121.4.38|${SERVER_NAME}|g' ${envFile}
+                        sed -i 's|35.222.175.109|${SERVER_NAME}|g' ${envFile}
+                    """
+                    sh "cat ${envFile}"
+                }
+            }
+        }
+
         stage('Building Docker Image (kepler-frontend)') {
             steps {
                 script {
