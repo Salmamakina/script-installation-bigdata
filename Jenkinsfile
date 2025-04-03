@@ -18,7 +18,8 @@ pipeline {
         }
         stage('Cloning the kepler frontend repository') {
             steps {
-                sshagent(['kepler-ssh']) {  
+                sshagent(['kepler-ssh']) {  // Remplace par l'ID de la credential SSH
+                    // sh 'git clone git@github.com:Tanit-Lab/kepler-frontend.git /var/lib/jenkins/workspace/Kepler-frontend/kepler-frontend/'
                     checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'kepler-frontend']], userRemoteConfigs: [[credentialsId: 'kepler-ssh', url: 'git@github.com:Tanit-Lab/kepler-frontend.git']])
                 }
             }
@@ -55,7 +56,6 @@ pipeline {
                 }
             }
         }
-
         // configuration de smarketyrs
         stage('Modifying NGINX config for smarketyrs') {
             steps {
@@ -78,7 +78,6 @@ pipeline {
                 }
             }
         }
-
         stage('Building Docker Image (kepler-frontend)') {
             steps {
                 script {
