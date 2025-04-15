@@ -14,9 +14,9 @@ if ! [ -f ./tar/hadoop-3.4.0.tar.gz ]; then
   wget -P ./tar https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz
 fi
 
-if ! [ -f ./tar/spark-3.4.3-bin-hadoop3.tgz ]; then
+if ! [ -f ./tar/spark-3.5.5-bin-hadoop3.tgz ]; then
   echo "Spark Binary isn't found downloading ... "
-  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.5.4/spark-3.5.5-bin-hadoop3.tgz
+  wget -P ./tar https://dlcdn.apache.org/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
 
 fi
 
