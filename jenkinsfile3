@@ -7,42 +7,122 @@ pipeline {
     }
 
      stages {
-          stage('Clean Workspace') {
+          // stage('Clean Workspace') {
+          //   steps {
+          //       cleanWs() 
+          //   }
+          // }
+          // stage('Clone livekit agents-playground repo') {
+          //      steps {
+          //           dir('agents-playground') {
+          //                git url: 'https://github.com/livekit/agents-playground.git', branch: 'main'
+          //           }
+          //      }
+          // }
+          // stage('Setup env file') {
+          //      steps {
+          //           dir('agents-playground') {
+          //                script {
+          //                sh '''
+          //                     cp .env.example .env.local
+          //                     sed -i 's|LIVEKIT_API_KEY=.*|LIVEKIT_API_KEY=devkey|' .env.local
+          //                     sed -i 's|LIVEKIT_API_SECRET=.*|LIVEKIT_API_SECRET=secret|' .env.local
+          //                     sed -i 's|NEXT_PUBLIC_LIVEKIT_URL=.*|NEXT_PUBLIC_LIVEKIT_URL=http://localhost:7880|' .env.local
+          //                '''
+          //                }
+          //           }
+          //      }
+          // }
+          // stage('Install and Run Dev') {
+          //      steps {
+          //           dir('agents-playground') {
+          //                script {
+          //                     sh 'npm install'
+          //                     sh 'nohup sudo npm run dev > /dev/null 2>&1 &'
+          //                }
+          //           }
+          //      }
+          // }
+          // stage('Setup and Run LiveKit') {
+          //   steps {
+          //       sh '''
+          //           # Install LiveKit
+          //           curl -sSL https://get.livekit.io | bash
+                    
+          //           # Run LiveKit server in the background
+          //           nohup livekit-server --dev > livekit.log 2>&1 &
+          //       '''
+          //      }
+          // }
+          stage('Clone livekit voice-pipeline-agent-python repo') {
+               steps {
+                    dir('voice-agent') {
+                         git url: 'https://github.com/livekit-examples/voice-pipeline-agent-python.git', branch: 'main'
+                    }
+               }
+          }
+          stage('Setup System') {
             steps {
-                cleanWs() 
+                sh '''
+                    sudo apt update && sudo apt upgrade -y
+                    sudo apt install -y python3 python3-venv python3-pip nano curl
+                '''
             }
           }
-          stage('Clone livekit agents-playground repo') {
-               steps {
-                    dir('agents-playground') {
-                         git url: 'https://github.com/livekit/agents-playground.git', branch: 'main'
-                    }
-               }
-          }
-          stage('Setup env file') {
-               steps {
-                    dir('agents-playground') {
-                         script {
-                         sh '''
-                              cp .env.example .env.local
-                              sed -i 's|LIVEKIT_API_KEY=.*|LIVEKIT_API_KEY=devkey|' .env.local
-                              sed -i 's|LIVEKIT_API_SECRET=.*|LIVEKIT_API_SECRET=secret|' .env.local
-                              sed -i 's|NEXT_PUBLIC_LIVEKIT_URL=.*|NEXT_PUBLIC_LIVEKIT_URL=http://localhost:7880|' .env.local
-                         '''
-                         }
-                    }
-               }
-          }
-          stage('Install and Run Dev') {
-               steps {
-                    dir('agents-playground') {
-                         sh '''
-                         npm install
-                         nohup npm run dev > /dev/null 2>&1 &
-                         '''
-                    }
-               }
-          }
+          stage('Prepare Agent Project') {
+            steps {
+                sh '''
+                    # Désactiver les features lourdes
+                    sed -i 's/noise_cancellation,/# noise_cancellation,/' ${WORKSPACE}/voice-agent/agent.py
+                    sed -i 's/turn_detector,/# turn_detector,/' ${WORKSPACE}/voice-agent/agent.py
+                    sed -i 's/turn_detector=turn_detector.EOUModel(),/# turn_detector=turn_detector.EOUModel(),/' ${WORKSPACE}/voice-agent/agent.py
+                    sed -i 's/noise_cancellation=noise_cancellation.BVC(),/# noise_cancellation=noise_cancellation.BVC(),/' ${WORKSPACE}/voice-agent/agent.py
+
+                    # Déplacer .env.local
+                    mv ${WORKSPACE}/voice-agent/.env.example ${WORKSPACE}/voice-agent/.env.local
+                    sudo chown jenkins:jenkins ${WORKSPACE}/voice-agent/.env.local
+                '''
+            }
+        }
+
+        stage('Setup & Run Agent') {
+            steps {
+                sh '''
+                    python3 -m venv ${WORKSPACE}/voice-agent/venv
+                    source ${WORKSPACE}/voicee-agent/venv/bin/activate
+                    pip install -r ${WORKSPACE}/voice-agent/requirements.txt
+
+                    # Télécharger les fichiers nécessaires
+                    python3 ${WORKSPACE}/voice-agent/agent.py download-files
+                '''
+            }
+        }
+
+        stage('Configure as Service') {
+            steps {
+                sh '''
+                    sudo bash -c "cat <<EOF > /etc/systemd/system/livekit-agent.service
+[Unit]
+Description=LiveKit Agent
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=${WORKSPACE}/voice-agent
+ExecStart=${WORKSPACE}/voice-agent/venv/bin/python3 agent.py dev
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF"
+
+                    sudo systemctl daemon-reload
+                    sudo systemctl enable livekit-agent
+                    sudo systemctl start livekit-agent
+                '''
+            }
+        }
+
      }
 }
 
